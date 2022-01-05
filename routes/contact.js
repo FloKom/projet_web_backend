@@ -1,9 +1,13 @@
 const express =  require('express')
 const router = express.Router()
 /* const contactCtr = require('../controllers/contact') */
+
+const auth = require('../middleware/auth');
 const Contact = require('../models/contact')
 
-router.get('/', (req,res,next) =>{
+
+
+router.get('/', auth, (req,res,next) =>{
     Contact.find().then(
         (contacts) => {
           res.status(200).json(contacts);
@@ -19,7 +23,7 @@ router.get('/', (req,res,next) =>{
 );
 
 
-router.post('/', (req, res, next) => {
+router.post('/', auth,(req, res, next) => {
     const contact = new Contact({
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -44,7 +48,7 @@ router.post('/', (req, res, next) => {
     );
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', auth, (req, res, next) => {
     Contact.findOne({
       _id: req.params.id
     }).then(
@@ -62,7 +66,7 @@ router.get('/:id', (req, res, next) => {
 );
 
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', auth, (req, res, next) => {
     const contact = new Contact({
         _id: req.params.id,
         firstname: req.body.firstname,
@@ -72,7 +76,7 @@ router.put('/:id', (req, res, next) => {
         profession: req.body.profession,
         birthday: req.body.birthday
     });
-    Contact.updateOne({_id: req.params.id}, contact).then(
+    Contact.updateOne({_id: req.params.id}, auth, contact).then(
         () => {
         res.status(201).json({
             message: 'Thing updated successfully!'
@@ -90,7 +94,7 @@ router.put('/:id', (req, res, next) => {
     }
 );
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', auth, (req, res, next) => {
     Contact.deleteOne({_id: req.params.id}).then(
       () => {
         res.status(200).json({
